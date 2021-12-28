@@ -1,6 +1,6 @@
 from django.http.response import HttpResponse
 from django.shortcuts import render, HttpResponse,redirect
-from .models import Cliente
+from .models import Cliente,Servicio
 # Create your views here.
 
 def home(request):
@@ -40,8 +40,8 @@ def conf_edit(request):
     return redirect('/')
       
 def servicios(request):
-    
-    return render(request,'Atelier/servicios.html')
+    servicios= Servicio.objects.all()    
+    return render(request,'Atelier/servicios.html',{ "servicios":servicios})
 
 def tienda(request):
     
