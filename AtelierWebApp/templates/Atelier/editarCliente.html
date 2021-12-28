@@ -1,0 +1,39 @@
+{% extends "./base.html" %}
+
+{% block title %} Gestión de Clientes {% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+        <h2>Edición de Curso</h2>
+        <div class="card">
+            <div class="card-body">
+                <form action="/conf_edit/" method="POST">{% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" id="txtId" name="txtId" value="{{cliente.pk}}" class="form-control" placeholder="Código"
+                            minlength="1" maxlength="6" readonly required>
+                    <div class="form-group">
+                        <input type="text" id="txtName" name="txtName" value="{{cliente.name}}" class="form-control" 
+                        maxlength="50" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="txtAdress" name="txtAdress" value="{{cliente.adress}}" class="form-control" placeholder="Direcciones"
+                            maxlength="50" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="numPhone" name="numPhone" value="{{cliente.phone}}" class="form-control" placeholder="telefono"
+                        maxlength="8" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="numPhone2" name="numPhone2" value="{{cliente.phone2}}" class="form-control" placeholder="Otro telefono"
+                        maxlength="8" >
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-block text-white">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
