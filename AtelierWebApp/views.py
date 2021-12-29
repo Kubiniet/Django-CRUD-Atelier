@@ -1,6 +1,7 @@
 from django.http.response import HttpResponse
 from django.shortcuts import render, HttpResponse,redirect
 from .models import Cliente,Servicio
+from .forms import ClienteForm
 # Create your views here.
 
 def home(request):
@@ -39,9 +40,19 @@ def conf_edit(request):
     cliente.save()
     return redirect('/')
       
-def servicios(request):
+"""def servicios(request):
     servicios= Servicio.objects.all()    
-    return render(request,'Atelier/servicios.html',{ "servicios":servicios})
+    return render(request,'Atelier/servicios.html',{ "servicios":servicios})"""
+
+def servicios(request):
+    servicios= Servicio.objects.all() 
+    form = ClienteForm()
+    if request.method == 'POST':
+        form = ClienteForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('servicios')
+    return render(request, 'Atelier/servicios.html',{ "servicios":servicios,'form': form})
 
 def tienda(request):
     

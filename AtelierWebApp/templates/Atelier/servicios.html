@@ -13,29 +13,31 @@
         </div>
         {% endfor %}
         {% endif %}
-        <h2>Gestión de Clientes</h2>
+        <h2>Gestión de Servicios</h2>
         <div class="card">
             <div class="card-body">
-                <form action="/registrarCliente/" method="POST">{% csrf_token %}
-                    <div class="form-group">
+                <form action="/servicios" method="POST">{% csrf_token %} {% load crispy_forms_tags %} {% crispy form %}
+                    
+                   <!-- <div class="form-group">
                         <input type="text" id="txtName" name="txtName" class="form-control" placeholder="Nombre"
                         maxlength="50" required>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="txtAdress" name="txtAdress" class="form-control" placeholder="Direccion"
+                        <input type="text" id="seccion" name="seccion" class="form-control" placeholder="Seccion"
                             maxlength="50" required>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="numPhone" name="numPhone" class="form-control" placeholder= "Telefono"
+                        <input type="text" id="genre" name="genre" class="form-control" placeholder= "Genero"
                         maxlength="8" required>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="numPhone2" name="numPhone2" class="form-control" placeholder= "Otro Telefono"
+                        <input type="text" id="price" name="price" class="form-control" placeholder= "Precio"
                         maxlength="8" >
-                    </div>
+                    </div>--> 
                     <div class="form-group">
                         <button type="submit" class="btn btn-success btn-block text-white">Guardar</button>
                     </div>
+
                 </form>
             </div>
         </div>
