@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import fields
-from .models import Cliente,Servicio
+from .models import Cliente,Servicio,Pedido
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
 from crispy_forms.bootstrap import PrependedText
@@ -27,3 +27,10 @@ class ClienteForm(forms.ModelForm):
           
         )
         """
+
+class PedidoForm(forms.ModelForm):
+    class Meta:
+        model = Pedido
+        fields= "__all__"
+        
+    

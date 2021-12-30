@@ -37,4 +37,14 @@ class Pedido(models.Model):
     entregado =models.BooleanField()
     pagado= models.BooleanField(default=False)
     servicio = models.ForeignKey(Servicio,null=True,blank=True,on_delete=models.CASCADE)
-    cliente = models.ForeignKey(Cliente,null=True,blank=True,on_delete=models.CASCADE)
+    servicio2 = models.ForeignKey(Servicio,null=True,blank=True,on_delete=models.CASCADE,related_name="servicio2")
+    servicio3 = models.ForeignKey(Servicio,null=True,blank=True,on_delete=models.CASCADE,related_name="servicio3")
+    cliente = models.ForeignKey(Cliente,blank=True,on_delete=models.CASCADE)
+    
+    def get_total_item_price(self):
+        return self.servicio2.price * self.servicio.price
+    
+    def get_total(self):
+        total = 0
+        for order_item in self.all():
+            total += order_item.get_total_item_price()

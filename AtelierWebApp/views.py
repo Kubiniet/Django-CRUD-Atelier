@@ -1,7 +1,7 @@
 from django.http.response import HttpResponse
 from django.shortcuts import render, HttpResponse,redirect
-from .models import Cliente,Servicio
-from .forms import ClienteForm
+from .models import Cliente,Servicio,Pedido
+from .forms import ClienteForm,PedidoForm
 # Create your views here.
 
 def home(request):
@@ -40,9 +40,6 @@ def conf_edit(request):
     cliente.save()
     return redirect('/')
       
-"""def servicios(request):
-    servicios= Servicio.objects.all()    
-    return render(request,'Atelier/servicios.html',{ "servicios":servicios})"""
 
 def servicios(request):
     servicios= Servicio.objects.all() 
@@ -54,10 +51,39 @@ def servicios(request):
             return redirect('servicios')
     return render(request, 'Atelier/servicios.html',{ "servicios":servicios,'form': form})
 
-def tienda(request):
+def eliminarServicio(request,pk):
+    servicio= Servicio.objects.get(pk=pk)
+    servicio.delete()
+    return redirect('/')
     
-    return HttpResponse("Tienda")
+def editarCliente(request,pk):
+    servicios= Servicio.objects.get(id=pk)
+    form = ClienteForm(request.POST or None, instance=servicios)
+    if request.method == 'POST':
+        form = ClienteForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('servicios')
+    return render(request,'Atelier/editarServicio.html',{ "servicios":servicios,'form': form})
 
+
+def pedidos(request):
+    pedidos = Pedido.objects.all()
+    form= PedidoForm(request.POST)
+    if request.method == 'POST':
+        form = PedidoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('pedidos')
+        
+    context = {'form': form,"pedidos":pedidos}
+    
+    return render(request,'Atelier/pedidos.html',context)
+
+def eliminarPedido(request,pk):
+    pedido= Pedido.objects.get(pk=pk)
+    pedido.delete()
+    return redirect('pedidos')
 
 def blogs (request):
     
