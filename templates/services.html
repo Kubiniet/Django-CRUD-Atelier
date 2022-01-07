@@ -1,0 +1,37 @@
+{% extends "./base.html" %}
+
+{% block title %} Gestión de Clientes {% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h1>Listado de Servicios</h1>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive py-2">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre</th>
+                                <th>Price</th>
+                                <th>Seccion</th>
+                                <th colspan="2">Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in object_list %}
+                            <tr>
+                                <td>{{forloop.counter}}</td>
+                                <td><a href="{{ c.get_absolute_url }}" class="btn btn-info">{{c.name}}</a></td>
+                                <td>{{c.price}}</td>
+                                <td>{{c.section}}</td>
+                                <td><a href="{{c.get_delete_client_url}}" class="btn btn-danger btnEliminacion">X</a></td>
+                                
+                            </tr>
+                            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

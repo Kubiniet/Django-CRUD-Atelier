@@ -1,0 +1,63 @@
+{% extends './base.html' %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+
+
+<div class="row">
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-dismissible alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong class="text-dark">{{ message }}</strong>
+        </div>
+        {% endfor %}
+        {% endif %}
+        <h2>Gestión de Clientes</h2>
+        <div class="card">
+            <div class="card-body">
+                <form action="{% url 'core:clientes' %}" method="POST">{% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-block text-white">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-8 col-xl-8">
+        <h1>Listado de Clientes</h1>
+        <div class="table-responsive py-2">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        <th>Direccion</th>
+                        <th>Telefono</th>
+                        <th colspan="2">Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in object_list %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td><a href="{{ c.get_absolute_url }}" class="btn btn-info">{{c.name}}</a></td>
+                        <td>{{c.adress}}</td>
+                        <td>{{c.phone}}</td>
+                        {% if c.isbad %} 
+                        <td>Esta en la lista negra</td>
+                        
+                        {% endif %}
+                        <td><a href="{{c.get_delete_client_url}}" class="btn btn-danger btnEliminacion">X</a></td>
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
