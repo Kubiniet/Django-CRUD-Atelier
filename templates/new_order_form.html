@@ -1,0 +1,16 @@
+{% extends './test.html' %} {% load crispy_forms_tags %} {% block formulario %}
+
+  <div class="card">
+    <div class="card-body">
+      <form action="{% url 'core:orders' %}" method="POST">
+        {% csrf_token %} {{ form|crispy }}
+        <div class="form-group">
+          <button type="submit" class="btn btn-success btn-block text-white">
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock formulario %}

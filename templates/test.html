@@ -1,0 +1,113 @@
+{% extends './base.html' %} {% load humanize %} {% block body %}
+<div class="row" > </div>
+  
+
+<div class="row">
+  
+  <div class="col-sm-12 offset-md-4 col-md-4 col-lg-4col-xl-4"><h1>Listado de Pedidos</h1>
+  {% block formulario %}{% endblock formulario %} 
+  </div>
+  <div class="row">
+    
+   
+    {% for c in object_list %}
+    <div class="col-md-4 col-xl-3 col-sm-6 ">
+      <div class="card  {% if c.paid  %} bg-c-green {% else %} bg-c-yellow {% endif %} order-card">
+          <div class="card-block">
+              <h6 class="m-b-20">Pedido de {{c.client}}</h6>
+              <h2 class="text-right"><a href="{{c.get_absolute_url}}">
+                <i class="fa fa-cart-plus f-left"></i></a><span> &nbsp {{c.get_total_price|intword}} </span></h2>
+              <p class="m-b-0">{{c.service}} x {{ c.quantity }}<span class="f-right">{{c.start_date|naturaltime}}</span></p>
+          </div>
+      </div>
+  </div>
+    
+    {% endfor %}
+  
+    </div>
+  </div>
+
+  {% endblock %}
+</div>
+{% comment %}
+  <div class="card text-white {% if c.paid  %}bg-primary {% else %} bg-danger {% endif %} ms-2 mb-3 me-2" style="max-width: 15rem">
+      <div class="card-header">{{forloop.counter}}........ {{c.start_date|naturaltime}} </div>
+      <div class="card-body">
+        <h4 class="card-title">{{c.client}}</h4>
+        <p class="card-text">
+          <tr>
+            <td>
+              {{c.quantity}}
+            </td>
+            <td>   x    </td>
+            <td>
+              {{c.service}}
+            </td>
+            <td text-align-last: right>
+              {{c.get_total_price}}  pesos
+            </td>
+          </tr> 
+        </p>
+        
+        <tr>
+          <td>
+            <a href="{{c.get_absolute_url}}" class="btn btn-dark">-</a>
+          </td>
+          <td>
+            <a href="editarPedido/{{c.pk}}" class="btn btn-dark">+</a>
+          </td>
+          <td>
+            <a
+              href="eliminarPedido/{{c.pk}}"
+              class="btn btn-dark btnEliminacion"
+              >x</a
+            >
+          </td>
+        </tr>
+      </div>
+    </div>
+     <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-xl-3 col-sm-6">
+                <div class="card bg-c-blue order-card">
+                    <div class="card-block">
+                        <h6 class="m-b-20">Orders Received</h6>
+                        <h2 class="text-right"><i class="fa fa-cart-plus f-left"></i><span>486</span></h2>
+                        <p class="m-b-0">Completed Orders<span class="f-right">351</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 col-xl-3 col-sm-6 ">
+                <div class="card bg-c-green order-card">
+                    <div class="card-block">
+                        <h6 class="m-b-20">Orders Received</h6>
+                        <h2 class="text-right"><i class="fa fa-rocket f-left"></i><span>486</span></h2>
+                        <p class="m-b-0">Completed Orders<span class="f-right">351</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 col-xl-3">
+                <div class="card bg-c-yellow order-card">
+                    <div class="card-block">
+                        <h6 class="m-b-20">Orders Received</h6>
+                        <h2 class="text-right"><i class="fa fa-refresh f-left"></i><span>486</span></h2>
+                        <p class="m-b-0">Completed Orders<span class="f-right">351</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 col-xl-3">
+                <div class="card bg-c-pink order-card">
+                    <div class="card-block">
+                        <h6 class="m-b-20">Orders Received</h6>
+                        <h2 class="text-right"><i class="fa fa-credit-card f-left"></i><span>486</span></h2>
+                        <p class="m-b-0">Completed Orders<span class="f-right">351</span></p>
+                    </div>
+                </div>
+            </div>
+      </div>
+    </div>
+
+{% endcomment %}

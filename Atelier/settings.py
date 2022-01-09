@@ -19,7 +19,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'crispy_forms',
+    'crispy_forms', 'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
@@ -50,7 +50,7 @@ TEMPLATES = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-es'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True

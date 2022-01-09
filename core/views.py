@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
-from .models import (Client, Section, Service, OrderService, Order)
+from .models import (Client, Section, Service, Order)
 from django.views.generic import CreateView, ListView, DetailView, View
-from .forms import ClientForm, OrderForm, IsoDateTimeField
+from .forms import ClientForm, OrderForm, NewOrderForm
 # Create your views here.
 
 
@@ -50,12 +50,12 @@ class ServiceView(ListView):
 
 
 class OrderView(ListView):
-    template_name = "order.html"
+    template_name = "new_order_form.html"
     model = Order
 
     def get_context_data(self, **kwargs):
         context = super(OrderView, self).get_context_data(**kwargs)
-        context['form'] = OrderForm
+        context['form'] = NewOrderForm
         return context
 
     def post(self, request, *args, **kwargs):
@@ -69,3 +69,12 @@ class OrderView(ListView):
         except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order")
             return redirect("core:orders")
+
+
+def DetailOrder(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    form = OrderForm(request.POST or None, instance=order)
+    if form.is_valid():
+        form.save()
+        return redirect('core:orders')
+    return render(request, 'detail_order.html', {"order": order, 'form': form})

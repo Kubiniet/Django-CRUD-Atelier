@@ -1,28 +1,4 @@
-{% extends './base.html' %} {% block body %}
-
-<div class="row">
-  <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
-    {% if messages %} {% for message in messages %}
-    <div class="alert alert-dismissible alert-success">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      <strong class="text-dark">{{ message }}</strong>
-    </div>
-    {% endfor %} {% endif %}
-    <h2>Gestión de Pedidos</h2>
-    <div class="card">
-      <div class="card-body">
-        <form action="/pedidos/" method="POST">
-          {% csrf_token %} {% load crispy_forms_tags %} {{ form|crispy }}
-          <div class="form-group">
-            <button type="submit" class="btn btn-success btn-block text-white">
-              Guardar
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-6 col-lg-8 col-xl-8">
+<div class="col-sm-12 col-md-6 col-lg-8 col-xl-8">
     <h1>Listado de Pedidos</h1>
     <div class="table-responsive py-2">
       <table class="table table-striped">
@@ -65,6 +41,3 @@
       </table>
     </div>
   </div>
-</div>
-
-{% endblock %}

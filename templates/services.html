@@ -25,7 +25,7 @@
                                 <td>{{forloop.counter}}</td>
                                 <td><a href="{{ c.get_absolute_url }}" class="btn btn-info">{{c.name}}</a></td>
                                 <td>{{c.price}}</td>
-                                <td>{{c.section}}</td>
+                                <td>{{c.section.get_section_display }}</td>
                                 <td><a href="{{c.get_delete_client_url}}" class="btn btn-danger btnEliminacion">X</a></td>
                                 
                             </tr>

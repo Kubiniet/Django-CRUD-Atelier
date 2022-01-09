@@ -61,21 +61,19 @@ class Service(models.Model):
         return self.name
 
 
-class OrderService(models.Model):
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
-    ordered = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.quantity} of {self.service.name}"
-
-
 class Order(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     start_date = models.DateTimeField(auto_now_add=True)
-    order_date = models.DateTimeField()
-    service = models.ManyToManyField(OrderService)
+    order_date = models.DateField()
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
     ordered = models.BooleanField(default=False)
     paid = models.BooleanField(default=False)
     extra_price = models.FloatField(null=True, blank=True)
     reasons = models.TextField(max_length=100, null=True, blank=True)
+    quantity = models.IntegerField(default=1)
+
+    def get_total_price(self):
+        return self.quantity * self.service.price
+
+    def get_absolute_url(self):
+        return reverse('core:detail_order', kwargs={'pk': self.pk})

@@ -1,0 +1,21 @@
+{% extends "./base.html" %}
+
+{% block title %} Gestión de Clientes {% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+        <h2>Editar orden #{{order.id}} :  </h2><h2></h2>
+        <div class="card">
+            <div class="card-body">
+                <form  method="POST">{% csrf_token %}{% load crispy_forms_tags %} {{ form|crispy }}
+                 
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-block text-white">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
