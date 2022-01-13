@@ -14,4 +14,6 @@ pip install -r requirments.txt
 
 In the folder project
 
-python manage.py runserver
+python manage.py runserver 
+
+open settings.py and delete the address in the variable ALLOWED_HOST=[]
