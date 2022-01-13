@@ -14,7 +14,7 @@ body {
 }
 
 .bg-c-yellow {
-  background: linear-gradient(45deg, #ffb64d, #ffcb80);
+  background: linear-gradient(45deg, #dbb57f, #ffcb80);
 }
 
 .bg-c-pink {
@@ -45,4 +45,21 @@ body {
 
 .f-right {
   float: right;
+}
+
+.selectdatewidget {
+  display: inline-block;
+}
+
+select[name$="_day"].selectdatewidget {
+  width: 27%;
+  color: red;
+}
+select[name$="_month"].selectdatewidget {
+  width: 38%;
+  color: rgb(73, 138, 100);
+}
+select[name$="_year"].selectdatewidget {
+  width: 35%;
+  color: #ffb64d;
 }

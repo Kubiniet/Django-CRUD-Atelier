@@ -1,5 +1,7 @@
 from django.db import models
+from django.db.models.fields import related
 from django.shortcuts import reverse
+import datetime
 
 SECTIONS_CHOICES = (
     ("BL", "BLUSAS"),
@@ -45,35 +47,40 @@ class Client(models.Model):
             'pk': self.pk})
 
 
-class Section(models.Model):
-    name = models.CharField(choices=SECTIONS_CHOICES, max_length=2)
-
-    def __str__(self):
-        return self.name
-
-
 class Service(models.Model):
     name = models.CharField(max_length=50)
     price = models.FloatField()
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    section = models.CharField(choices=SECTIONS_CHOICES, max_length=2)
 
     def __str__(self):
-        return self.name
+        section = self.get_section_display()
+        return str(f' {section} {self.name} ')
 
 
 class Order(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(
+        Client, on_delete=models.CASCADE, related_name='order')
     start_date = models.DateTimeField(auto_now_add=True)
     order_date = models.DateField()
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     ordered = models.BooleanField(default=False)
     paid = models.BooleanField(default=False)
-    extra_price = models.FloatField(null=True, blank=True)
+    extra_price = models.FloatField(default=0)
     reasons = models.TextField(max_length=100, null=True, blank=True)
     quantity = models.IntegerField(default=1)
 
     def get_total_price(self):
-        return self.quantity * self.service.price
+        return self.quantity * self.service.price + self.extra_price
 
     def get_absolute_url(self):
         return reverse('core:detail_order', kwargs={'pk': self.pk})
+
+    def get_delivery_time(self):
+        time = self.start_date.date()
+        days = self.order_date
+        res = days - time
+
+        return res.days
+
+    class Meta():
+        ordering = ['-start_date']

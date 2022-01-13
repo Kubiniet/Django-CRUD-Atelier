@@ -1,73 +1,143 @@
-{% extends './base.html' %}
+{% extends './base.html' %} {%load humanize%}
+
+<script >
+{% block jquery %}
+var endpoint ='/api/data/'
+var defaultdata=[]
+var labels=[]
+
+$.ajax({
+    method:'GET',
+    url:endpoint,
+    success: function(data){
+        labels = data.labels
+        defaultdata=data.default
+        var myChart = new Chart(
+            document.getElementById('myChart'),
+            {
+            type: 'bar',
+            data: {
+                        labels: labels,
+                        datasets: [{
+                        label: '$',
+                        backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 205, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(201, 203, 207, 0.2)'
+                        ],
+                        borderColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(255, 159, 64)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)',
+                        'rgb(153, 102, 255)',
+                        'rgb(201, 203, 207)'
+                        ],
+                        borderWidth: 1,
+                        data:defaultdata ,
+                        }]
+        },
+            options: {}
+        }
+        );
+        var myChart2 = new Chart(
+            document.getElementById('myChart2'),
+            {
+            type: 'doughnut',
+            data: {
+        labels: labels,
+        datasets: [{
+            label: labels,
+            data: defaultdata,
+            backgroundColor: [
+            'rgb(255, 99, 132)',
+            'rgb(54, 162, 235)',
+            'rgb(255, 205, 86)'
+            ],
+            hoverOffset: 4
+        }]
+        },
+            });
+    
+
+    },
+    error:function(error_data){
+        console.log('error')
+        console.log('error_data')}
+})
+    
+
+  
+
+{% endblock jquery %}
+</script>
 
 {% block body %}
 
 
-<div class="row">
-    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-dismissible alert-success">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong class="text-dark">{{ message }}</strong>
-        </div>
-        {% endfor %}
-        {% endif %}
-        <h2>Gestión de Clientes</h2>
-        <div class="card">
-            <div class="card-body">
-                <form action="/registrarCliente/" method="POST">{% csrf_token %}
-                    <div class="form-group">
-                        <input type="text" id="txtName" name="txtName" class="form-control" placeholder="Nombre"
-                        maxlength="50" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="txtAdress" name="txtAdress" class="form-control" placeholder="Direccion"
-                            maxlength="50" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="numPhone" name="numPhone" class="form-control" placeholder= "Telefono"
-                        maxlength="8" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="numPhone2" name="numPhone2" class="form-control" placeholder= "Otro Telefono"
-                        maxlength="8" >
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-success btn-block text-white">Guardar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-12 col-md-6 col-lg-8 col-xl-8">
-        <h1>Listado de Clientes</h1>
-        <div class="table-responsive py-2">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Nombre</th>
-                        <th>Direccion</th>
-                        <th>Telefono</th>
-                        <th colspan="2">Opciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for c in clientes %}
-                    <tr>
-                        <td>{{forloop.counter}}</td>
-                        <td>{{c.name}}</td>
-                        <td>{{c.adress}}</td>
-                        <td>{{c.phone}}</td>
-                        <td><a href="editarCliente/{{c.pk}}" class="btn btn-info">Editar</a></td>
-                        <td><a href="eliminarCliente/{{c.pk}}" class="btn btn-danger btnEliminacion">Eliminar</a></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+<div class="container" >
+    <div class="row justify-content-md-center pd-8">
+             <div class='col-4 p-8'><h1  >Morandos's Atelier </h1></div> 
     </div>
 </div>
+<div class="container">
+    <div class="row pt-6 ">
+    
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-success order-card">
+            <div class="card-block">
+                <h6 class="m-b-20">Ingreso bruto hasta hoy </h6>
+                <h2 class="text-right"><span>{{total}}$</span><i class="fa fa-credit-card f-right"></i></h2>
+                <p class="m-b-0">Ordenes completadas<span class="f-right">{{count}}</span></p>
+            </div>
+            </div>
+        </div> 
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-primary order-card">
+            <div class="card-block">
+                <h6 class="m-b-20">Cliente con mas ordenes </h6>
+                <h2 class="text-right"><span>{{client}}</span><span class="f-right">{{money_client|intword}}&nbsp;$ </span></h2>
+                <p class="m-b-0">Ordenes completadas<span class="f-right">{{count_orders_best_client|intword}} </span></p>
+            </div>
+            </div>
+        </div>   
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-danger order-card">
+            <div class="card-block">
+                <h6 class="m-b-20">Ganancia promedio por mes </h6>
+                <h2 class="text-right"><span>{{avg|intword}}$</span><i class="fa fa-rocket f-right"></i></h2>
+                <p class="m-b-0">Promedio de ordenes<span class="f-right"></span></p>
+            </div>
+            </div>
+        </div> 
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-info order-card">
+            <div class="card-block">
+                <h6 class="m-b-20">Servicio mas requerido </h6>
+                <h2 class="text-right"><span>{{service}}</span><i class="fa fa-credit-card f-right"></i></h2>
+                <p class="m-b-0">Ordenes completadas<span class="f-right">{{count_service}}</span></p>
+            </div>
+            </div>
+        </div>   
+    </div>
+</div>
+<div class="container ">
+     <div class="row">  
+       
+       <div class="col-md-8 pt-4">
+           <h2>Grafico de barras</h2>
+                <canvas id="myChart"></canvas>
+        </div>
+        <div class="col-md-4 pt-4">
+            <h2>Distribucion por meses</h2>
+                <canvas id="myChart2"></canvas>
+        </div>
+    </div>
+</div> 
 
 {% endblock %}

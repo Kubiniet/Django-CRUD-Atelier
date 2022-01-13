@@ -4,8 +4,9 @@
 {% block body %}
 
 
-<div class="row">
-    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+<div class="container">
+    
+    <div class="col-lg-4 col-xl-4 offset-lg-4 col-md-6 offset-md-3 col-sm-12 pb-10">
         {% if messages %}
         {% for message in messages %}
         <div class="alert alert-dismissible alert-success">
@@ -14,21 +15,42 @@
         </div>
         {% endfor %}
         {% endif %}
-        <h2>Gestión de Clientes</h2>
-        <div class="card">
-            <div class="card-body">
-                <form action="{% url 'core:clientes' %}" method="POST">{% csrf_token %}
-                    {{ form|crispy }}
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-success btn-block text-white">Guardar</button>
+        
+        <div class="accordion mb-4 " id="accordionExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                  <h2>Nuevo Cliente  </h2>
+                </button>
+              </h2>
+              <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample" >
+                <div class="accordion-body">
+                    <h2></h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <form action="{% url 'core:clientes' %}" method="POST">{% csrf_token %}
+                                {{ form|crispy }}
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-success btn-block text-white f-right">Guardar</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </form>
+                </div>
+              </div>
             </div>
-        </div>
-    </div>
-    <div class="col-sm-12 col-md-6 col-lg-8 col-xl-8">
+            
+            </div>
+        
+    
+   
         <h1>Listado de Clientes</h1>
-        <div class="table-responsive py-2">
+        <form class="d-flex  mt-4">
+            <input class="form-control me-2" type="search" placeholder="Buscar por nombre" name='search_area' aria-label="Search">
+            <button class="btn btn-outline-success" value='Search' type="submit">Buscar</button>
+          </form>
+    </div>
+        <div class="table-responsive py-4">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -59,5 +81,8 @@
         </div>
     </div>
 </div>
+</div>
+   
+
 
 {% endblock %}

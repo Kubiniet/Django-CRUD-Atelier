@@ -1,0 +1,121 @@
+{% extends './base.html' %} {% load humanize %} {% block body %}
+
+  
+
+
+  
+    
+  
+<div class="container mb-4">
+  
+  <div class="col "><h1>Listado de Pedidos de {{month|date:"F "}}</h1>
+</div>
+<div class="btn-group col-2 col-sm-2" role="group" aria-label="Basic example">
+  {% if previous_month %}
+    
+  <a href='{% url 'core:archive_month_numeric' previous_month|date:'Y' previous_month|date:'m' %}' class="button btn btn-primary">{{ previous_month|date:'F' }}
+  </a>
+
+  {% endif %}
+  
+  <a  class="button btn btn-outline-primary"=>{{month|date:"F"}}</a>
+  {% if next_month %}
+  <a href='{% url 'core:archive_month_numeric' next_month|date:'Y' next_month|date:'m' %}'  class="button btn  btn-primary"  >{{ next_month|date:'F' }}</a>  
+    {% endif %}
+</div> 
+</div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4 col-xl-3">
+          <div class="card bg-success order-card">
+            <div class="card-block">
+              <h6 class="m-b-20">Ingreso bruto del {{month|date:" Y "}}</h6>
+              <h2 class="text-right"><span>{{money_y}}$</span><i class="fa fa-credit-card f-right"></i></h2>
+              <p class="m-b-0">Ordenes completadas<span class="f-right">{{count_y}}</span></p>
+          </div>
+          </div>
+      </div>
+      <div class="col-md-4 col-xl-3">
+        <div class="card bg-primary order-card">
+            <div class="card-block">
+                <h6 class="m-b-20">Ingreso bruto de {{month|date:"F "}}</h6>
+                <h2 class="text-right"><span>{{feo}}$</span><i class="fa fa-credit-card f-right"></i></h2>
+                <p class="m-b-0">Ordenes Completadas<span class="f-right">{{ count|intword }}</span></p>
+            </div>
+        </div>
+      </div>
+   
+      <div class="col-md-4 col-xl-3">
+          <div class="card bg-danger order-card">
+              <div class="card-block">
+                  <h6 class="m-b-20">Total de ordenes este mes</h6>
+                  <h2 class="text-right"><span>  {{ count|intword }}</span><i class="fa fa-credit-card f-right"></i></h2>
+                  <p class="m-b-0">Ordenes completadas<span class="f-right">{{count_m}}</span></p>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+   
+    {% for c in object_list %}
+    <div class="col-md-4 col-xl-3  ">
+      <div class="card  {% if c.paid  %} bg-success {% else %} bg-info {% endif %} order-card">
+          <div class="card-block">
+              <h6 class="m-b-20">Pedido de {{c.client}}</h6>
+              <h2 class="text-right">{% if not c.paid   %} <a href="{% url 'core:ispaidbydate' c.id month|date:'Y' month|date:'m' %}"><span>  {{c.get_total_price|intword}} $ </span></a>{% else %} <span>  {{c.get_total_price|intword}} $ </span> {% endif %}<a href="{{c.get_absolute_url}}">
+                <i class="fa fa-cart-plus f-right"></i></a></h2>
+              <p class="m-b-0">{{c.service.name}} x {{ c.quantity }}<span class="f-right">{{c.start_date|naturaltime}}</span></p>
+          </div>
+      </div>
+  </div>
+
+    {% endfor %}
+    <div class="row justify-content-md-center">
+    <div class="col-sm-12 col-md-10 col-lg-8 col-xl-8">
+      <h1>Tabla de pedidos pagados</h1>
+      <div class="table-responsive py-2">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr class="table-active">
+              <th>Cliente</th>
+              <th>Servicio</th>
+              <th>Cantidad</th>
+              <th>Duracion</th>
+              <th>Entregado</th>
+              <th>Extra</th>
+              <th>Total</th>
+              <th colspan="2">Opciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in object_list %}
+            {% if c.paid %}
+            <tr  >
+              <th scope='row'> {{c.client}} </td>
+              <td>{{c.service}}</td>
+              <td>{{c.quantity}}</td>
+              <td>{{c.get_delivery_time|naturaltime}}</td>
+              <td>{{c.order_date}}</td>
+              <td>{{c.extra_price}}</td>
+  
+              <td>{{c.get_total_price}}</td>
+              <td>
+                <a href="{{c.get_absolute_url}}" class="btn btn-info">x</a>
+              </td>
+              
+            </tr>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  {% endblock %}
+</div>
