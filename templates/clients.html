@@ -2,87 +2,62 @@
 {% load crispy_forms_tags %}
 
 {% block body %}
-
-
-<div class="container">
-    
+<section class="mb-4 ">
     <div class="col-lg-4 col-xl-4 offset-lg-4 col-md-6 offset-md-3 col-sm-12 pb-10">
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-dismissible alert-success">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong class="text-dark">{{ message }}</strong>
-        </div>
-        {% endfor %}
-        {% endif %}
-        
-        <div class="accordion mb-4 " id="accordionExample">
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingOne">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                  <h2>Nuevo Cliente  </h2>
-                </button>
-              </h2>
-              <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample" >
-                <div class="accordion-body">
-                    <h2></h2>
-                    <div class="card">
-                        <div class="card-body">
-                            <form action="{% url 'core:clientes' %}" method="POST">{% csrf_token %}
-                                {{ form|crispy }}
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-success btn-block text-white f-right">Guardar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-              </div>
-            </div>
-            
-            </div>
-        
     
-   
-        <h1>Listado de Clientes</h1>
-        <form class="d-flex  mt-4">
-            <input class="form-control me-2" type="search" placeholder="Buscar por nombre" name='search_area' aria-label="Search">
-            <button class="btn btn-outline-success" value='Search' type="submit">Buscar</button>
-          </form>
+        <div class="card">
+            <div class='card-header text-center'><h2>Clientes</h2></div>
+            <div class="card-body">
+                <form  method="POST">{% csrf_token %}
+                            {{ form|crispy }}
+                    <div class="form-group pt-2">
+                    <button type="submit" class="btn btn-success btn-block text-white " >Crear</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+           
     </div>
-        <div class="table-responsive py-4">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Nombre</th>
-                        <th>Direccion</th>
-                        <th>Telefono</th>
-                        <th colspan="2">Opciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for c in object_list %}
-                    <tr>
-                        <td>{{forloop.counter}}</td>
-                        <td><a href="{{ c.get_absolute_url }}" class="btn btn-info">{{c.name}}</a></td>
-                        <td>{{c.adress}}</td>
-                        <td>{{c.phone}}</td>
-                        {% if c.isbad %} 
-                        <td>Esta en la lista negra</td>
-                        
-                        {% endif %}
-                        <td><a href="{{c.get_delete_client_url}}" class="btn btn-danger btnEliminacion">X</a></td>
-                        
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+</section>
+
+ 
+<section class="mb-4">
+    <div class="card">
+        <div class="card-header text-center py-3">
+        <h5 class="mb-0 text-center"><strong>Tabla de clientes</strong></h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre</th>
+                                <th>Direccion</th>
+                                <th>Telefono</th>
+                                <th colspan="2">Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in object_list %}
+                            <tr>
+                                <td>{{forloop.counter}}</td>
+                                <td><a href="{{ c.get_absolute_url }}" class="btn btn-info">{{c.name}}</a></td>
+                                <td>{{c.adress}}</td>
+                                <td>{{c.phone}}  {% if c.phone2 %}	<br> {{c.phone2}}  {% endif %}</td>
+                                {% if c.isbad %} 
+                                <td>Esta en la lista negra</td>
+                                
+                                {% endif %}
+                                <td><a href="{{c.get_delete_client_url}}" class="btn btn-danger btnEliminacion">X</a></td>
+                                
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-</div>
-   
-
-
+</section>  
 {% endblock %}

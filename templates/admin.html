@@ -1,0 +1,192 @@
+{% extends './base.html' %}  {%load humanize%} {%load static%} 
+
+<script >
+{% block jquery %}
+
+
+var endpoint ='/api/data/'
+var defaultdata=[]
+var labels=[]
+
+$.ajax({
+    method:'GET',
+    url:endpoint,
+    success: function(data){
+        labels = data.labels
+        defaultdata=data.default
+        var myChart = new Chart(
+            document.getElementById('myChart'),
+            {
+            type: 'bar',
+            data: {
+                        labels: labels,
+                        datasets: [{
+                        label: '$',
+                        backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 205, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(201, 203, 207, 0.2)'
+                        ],
+                        borderColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(255, 159, 64)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)',
+                        'rgb(153, 102, 255)',
+                        'rgb(201, 203, 207)'
+                        ],
+                        borderWidth: 1,
+                        data:defaultdata ,
+                        }]
+        },
+            options: {scales: {
+      y: {
+        beginAtZero: true
+      }
+    }}
+        }
+        );
+        var myChart2 = new Chart(
+            document.getElementById('myChart2'),
+            {
+            type: 'doughnut',
+            data: {
+        labels: labels,
+        datasets: [{
+            label: labels,
+            data: defaultdata,
+            backgroundColor: [
+            'rgb(255, 99, 132)',
+            'rgb(54, 162, 235)',
+            'rgb(255, 205, 86)'
+            ],
+            hoverOffset: 4
+        }]
+        },
+            });
+    
+
+    },
+    error:function(error_data){
+        console.log('error')
+        console.log('error_data')}
+})
+
+{% endblock jquery %}
+</script>
+
+{% block body %}
+<section>
+<div class="container" >
+  <div class="row justify-content-md-center pd-8">
+          <div class='col-lg-4  col-sm-12'><h1  >Morando's Atelier </h1></div> 
+          <div class='col-lg-2 p-8 col-sm-6'><img src="{% static 'img/img1.png' %}" height="100px"/></div>
+  </div>
+</div>
+</section>
+<section class="mb-4">
+  <div class="container ">
+    <div class="row">  
+      <div class="col-md-6 pt-4">
+        <div class="card">
+          <div class="card-header py-3">
+            <h5 class="mb-0 text-center"><strong>Grafico de barras</strong></h5>
+          </div>
+          <div class="card-body">
+              <canvas id="myChart"></canvas>
+          </div>
+        </div>
+      </div>  
+      <div class="col-md-6 pt-4">
+        <div class="card">
+          <div class="card-header py-3">
+            <h5 class="mb-0 text-center"><strong>Distribucion por meses</strong></h5>
+          </div>
+          <div class="card-body">
+              <canvas id="myChart2"></canvas>
+          </div>
+        </div>
+      </div>
+   </div>
+  </div> 
+</section>
+  <!--Main Navigation-->
+
+      <section> 
+        <div class="row">
+        <div class="col-xl-3 col-sm-6 col-12 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between px-md-1">
+                <div class="align-self-center">
+                  <i class="fas fa-business-time text-danger fa-3x"></i>
+                  
+                </div>
+                <div class="text-end">
+                  <h3>{{pending}}</h3>
+                  <p class="mb-0">Ordenes pendientes</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 col-12 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between px-md-1">
+                <div class="align-self-center">
+                  <i class="far fa-check-square text-warning fa-3x"></i>
+                </div>
+                <div class="text-end">
+                  <h3>{{count}}</h3>
+                  <p class="mb-0">Ordenes completadas </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 col-12 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between px-md-1">
+                <div class="align-self-center">
+                  <i class="fas fa-credit-card text-success fa-3x"></i>
+                </div>
+                <div class="text-end">
+                  <h3>{{total|intword}} $</h3>
+                  <p class="mb-0">Ingreso bruto hasta hoy</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 col-12 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between px-md-1">
+                <div class="align-self-center">
+                  <i class="fas fa-users text-info fa-3x"></i>
+                </div>
+                <div class="text-end">
+                  <h3>{{count_client}}</h3>
+                  <p class="mb-0">Total de Clientes</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </section>
+  
+  <!--Main layout-->
+  {% endblock body %}
+  
+
+</body>
+
+</html>

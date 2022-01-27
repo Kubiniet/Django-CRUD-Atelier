@@ -1,0 +1,51 @@
+{% extends './base.html' %} {% load humanize %} {% block body %}{% load crispy_forms_tags %}
+
+<section>
+    <div class="row">
+        <div class="col-lg-4 col-xl-4 offset-lg-4 col-md-6 offset-md-3 col-sm-12 pb-10">
+            
+            <div class="card">
+                <div class='card-header text-center'><h2>Tareas</h2></div>
+                <div class="card-body">
+                    <form  method="POST">{% csrf_token %} {{ form|crispy }}
+                    
+                        <div class="form-group pt-2">
+                            <button type="submit" class="btn btn-success btn-block text-white">Crear</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section>
+    <div class="container mt-2">
+        <div class="row">
+            {% for c in object_list %}
+            <div class="col-xl-6 col-md-12 mb-4">
+                <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between p-md-1">
+                    <div class="d-flex flex-row">
+                        <div class="align-self-center">
+                            {% if not c.done %}
+                        <a href="{% url 'core:isdone' c.id %}"><i class="fas fa-heart-broken text-danger fa-3x me-4"></i></a>
+                            {% else %}
+                        <i class="fas fa-heart text-primary fa-3x me-4"></i>
+                            {% endif %}    
+                        </div>
+                    </div>
+                    <div class="align-self-center">
+                        <a  href="{% url 'core:detail-task' c.id %}" {% if not c.done %} class='text-danger' {% else %} class='text-primary'{% endif %}><h2 class=" mb-0">{{c.title}} </h2></a>
+                        <p style="float: right;">{{ c.stamptime|naturaltime }} <a {% if not c.done %} class='text-danger' {% else %} class='text-primary' {% endif %}  href="{% url 'core:del-task' c.id %}">x</a></p>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

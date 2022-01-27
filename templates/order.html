@@ -1,70 +1,84 @@
-{% extends './base.html' %} {% block body %}
+{% extends './base.html' %} {% load crispy_forms_tags %} {% block body %} 
 
-<div class="row">
-  <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
-    {% if messages %} {% for message in messages %}
-    <div class="alert alert-dismissible alert-success">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      <strong class="text-dark">{{ message }}</strong>
-    </div>
-    {% endfor %} {% endif %}
-    <h2>Gestión de Pedidos</h2>
-    <div class="card">
-      <div class="card-body">
-        <form action="/pedidos/" method="POST">
-          {% csrf_token %} {% load crispy_forms_tags %} {{ form|crispy }}
-          <div class="form-group">
-            <button type="submit" class="btn btn-success btn-block text-white">
-              Guardar
-            </button>
+
+<section class="mb-4 ">
+  <div class="col-lg-4 col-xl-4 offset-lg-4 col-md-6 offset-md-3 col-sm-12 pb-10">
+  
+      <div class="card">
+          <div class='card-header text-center'><h2>Ordenes</h2></div>
+          <div class="card-body">
+              <form  method="POST">{% csrf_token %}
+                          {{ form|crispy }}
+                  <div class="form-group pt-2">
+                  <button type="submit" class="btn btn-success btn-block text-white " >Crear</button>
+                  </div>
+              </form>
           </div>
-        </form>
+      </div>
+         
+  </div>
+</section>
+  
+<section class="mb-4">
+  <div class="card">
+    <div class="card-header text-center py-3">
+      <h5 class="mb-0 text-center"><strong>Tabla de Ordenes
+        
+      </strong></h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover text-nowrap">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th class="text-center">Cliente</th>
+                  <th class="text-center">Fecha</th>
+                  <th class="text-center">Servicio</th>
+                  <th class="text-center">Total</th>
+                  
+                  <th class="text-center">Pagado</th>
+                  <th class="text-center">Opciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for c in object_list %}
+                <tr>
+                  <td >{{ forloop.counter }}</td>
+                  <td class="text-center">{{c.client}}</td>
+                  <td class="text-center">{{c.order_date|date:"d/n/y"}}</td>
+                  <td style="width:100px" class="text-center" >
+                        
+                    {% for d in c.service.all %}
+                    {% if forloop.last %}
+                    {{d}}.
+                    {% elif forloop.counter == 4 or forloop.counter == 7 %} <br> 
+                    {{d}},
+                    {% else %}
+                    {{d}}, 
+                    {% endif %}
+                    {% endfor %}
+                    
+                </td>
+                  <td class="text-center">{{c.get_final_price}} $</td>
+                  
+                  <td class="text-center">{% if c.paid %} <i class="fas fa-check fa-2x"></i>{% else %}<a href="{% url 'core:ispaid' c.pk %}"><i class="fas fa-times-circle fa-2x "></i></a> {% endif %}</td>
+                  
+                  <td class="text-center">
+                    <a href="{% url 'core:detail-order' c.pk %}" class="btn btn-info">+</a>
+                   
+                    
+                    <a href="{% url 'core:del-order' c.pk %}" class="btn btn-danger">x</a>
+                   
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+        </table>
       </div>
     </div>
   </div>
-  <div class="col-sm-12 col-md-6 col-lg-8 col-xl-8">
-    <h1>Listado de Pedidos</h1>
-    <div class="table-responsive py-2">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Cliente</th>
-            <th>Servicio</th>
-            <th>Cantidad</th>
-            <th>Plazo de entrega</th>
-            <th>Entregado</th>
-            <th>Pagado</th>
-            <th>Total</th>
-            <th colspan="2">Opciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for c in object_list %}
-          <tr>
-            <td>{{c.client}}</td>
-            <td>{{c.service}}</td>
-            <td>{{c.quantity}}</td>
-            <td>{{c.order_date}}</td>
-            <td>{{c.ordered}}</td>
-            <td>{{c.paid}}</td>
+</section>
 
-            <td>{{c.get_total_price}}</td>
-            <td>
-              <a href="editarPedido/{{c.pk}}" class="btn btn-info">x</a>
-            </td>
-            <td>
-              <a
-                href="eliminarPedido/{{c.pk}}"
-                class="btn btn-danger btnEliminacion"
-                >x</a
-              >
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
 
 {% endblock %}

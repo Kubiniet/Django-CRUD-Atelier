@@ -1,17 +1,17 @@
 {% extends "./base.html" %}
 
-{% block title %} Gestión de Servicios {% endblock %}
+{% block title %} Gestión de Clientes {% endblock %}
 
 {% block body %}
 <div class="row">
-    <div class="col-md-4 offset-md-4">
-        <h2>Editar Servicio {{serv.name}} :  </h2><h2></h2>
+    <div class="col-md-4 offset-md-4 text-center">
+        <h2>Editar Tarea : </h2><h2></h2>
         <div class="card">
             <div class="card-body">
                 <form  method="POST">{% csrf_token %}{% load crispy_forms_tags %} {{ form|crispy }}
                  
                     <div class="form-group">
-                        <button type="submit" class="btn btn-success btn-block f-right mt-4 text-white">Guardar</button>
+                        <button type="submit" class="btn btn-success btn-block text-white">Guardar</button>
                     </div>
                 </form>
             </div>

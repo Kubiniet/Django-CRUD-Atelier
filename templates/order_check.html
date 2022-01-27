@@ -1,0 +1,29 @@
+
+{% extends './base.html' %} {% load crispy_forms_tags %} 
+
+
+{% block body %}
+
+<section class="mb-4 ">
+  <div class="col-lg-4 col-xl-4 offset-lg-4 col-md-6 offset-md-3 col-sm-12 pb-10">
+  
+      <div class="card">
+          <div class='card-header text-center'><h2>Seguro quieres eliminar esta orden?</h2></div>
+          <div class="card-body">
+            <p class="text-primary"><small>Si lo eliminas se le descontara el aporte a los ingresos del mes si ya estaba pagado.</small></p>
+              <form  method="POST">{% csrf_token %}
+                          {{ form|crispy }}
+                <div class="form-group pt-2" style="float: right;">
+                    <a type="button" href='{% url 'core:orders' %}' class="btn btn-danger  text-white "  >Cancelar</a>
+                    <button type="submit" class="btn btn-primary  text-white " >Eliminar</button>
+                </div>
+              </form>
+          </div>
+      </div>
+         
+  </div>
+
+
+       
+    
+{% endblock body %}

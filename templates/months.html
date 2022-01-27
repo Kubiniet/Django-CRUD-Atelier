@@ -1,0 +1,200 @@
+{% extends './base.html' %} {% load humanize %} {% block body %}
+
+  
+
+
+  
+<section>  
+  
+<div class="container mb-4">
+  
+    <div class="col "><h1>Listado de Pedidos de {{month|date:"F "}}</h1>
+    </div>
+        <div class="btn-group  col-sm-2" role="group" aria-label="Basic example">
+        {% if previous_month %}
+            
+        <a href='{% url 'core:orders-month' previous_month|date:'Y' previous_month|date:'m' %}' class="button btn btn-primary">{{ previous_month|date:'F' }}
+        </a>
+
+        {% endif %}
+        
+        <a  class="button btn btn-outline-primary"=>{{month|date:"F"}}</a>
+        {% if next_month %}
+        <a href='{% url 'core:orders-month' next_month|date:'Y' next_month|date:'m' %}'  class="button btn  btn-primary"  >{{ next_month|date:'F' }}</a>  
+            {% endif %}
+        </div> 
+</div>
+</section>  
+<section>
+<div class="container">
+  <div class="row">
+    <div class="col-xl-6 col-md-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between p-md-1">
+                <div class="d-flex flex-row">
+                    <div class="align-self-center">
+                    <i class="fas fa-wallet text-info fa-3x me-4"></i>
+                    </div>
+                    <div>
+                    <h4>Ingreso bruto </h4>
+                    <p class="mb-0">{{month|date:" F Y "}}</p>
+                    </div>
+                </div>
+                <div class="align-self-center">
+                    <h2 class="h1 mb-0"> {% if money_m %} {{money_m|intword}}$ {% else %}<i class="fas fa-grin-beam-sweat text-info "></i> {% endif %} </h2>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-md-12 mb-4">
+            <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between p-md-1">
+                <div class="d-flex flex-row">
+                    <div class="align-self-center">
+                    <i class="fas fa-pencil-alt text-warning fa-3x me-4"></i>
+                    </div>
+                    <div>
+                    <h4>Total de ordenes</h4>
+                    <p class="mb-0">{{month|date:"F Y "}}</p>
+                    </div>
+                </div>
+                <div class="align-self-center">
+                    <h2 class="h1 mb-0"> {{ count|intword }}</h2>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-md-12 mb-4">
+            <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between p-md-1">
+                <div class="d-flex flex-row">
+                    <div class="align-self-center">
+                    <i class="fas fa-smile-beam text-success fa-3x me-4"></i>
+                    </div>
+                    <div>
+                    <h4>Ordenes Completadas</h4>
+                    <p class="mb-0">{{month|date:"F Y "}}</p>
+                    </div>
+                </div>
+                <div class="align-self-center">
+                    <h2 class="h1 mb-0"> {{ count_m|intword }}</h2>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-md-12 mb-4">
+            <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between p-md-1">
+                <div class="d-flex flex-row">
+                    <div class="align-self-center">
+                    <i class="fas fa-angry text-danger fa-3x me-4"></i>
+                    </div>
+                    <div>
+                    <h4>Ordenes Pendientes</h4>
+                    <p class="mb-0">{{month|date:"F Y "}}</p>
+                    </div>
+                </div>
+                <div class="align-self-center">
+                    <h2 class="h1 mb-0"> {{ count_p|intword }}</h2>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+<section>
+<div class="container">
+  <div class="row">
+   
+    {% for c in object_list %}
+    <div class="col-xl-3 col-sm-6 col-12 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between px-md-1">
+              <div class="align-self-center">
+                {% if not c.paid   %}<a href="{% url 'core:ispaidbydate' c.id month|date:'Y' month|date:'m' %}"><i class="fas fa-business-time text-danger fa-3x"></i></a>{% else %}<a href="{% url 'core:detail-order' c.pk %}"> <i class="fa fa-cart-plus text-success fa-3x"></i></a>{% endif %}
+                
+              </div>
+              <div class="text-end">
+                <h3>{{c.get_final_price|intword}} $</h3>
+                <p class="mb-0">{{c.client}}{% with c.service.all.count as service %}<span class="badge badge-pill badge-danger text-danger">{{service}} serv</span>{% endwith %} <br> {{c.start_date|naturaltime}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+   
+
+    {% endfor %}
+</section>
+<section class="mb-4">
+    <div class="card">
+      <div class="card-header text-center py-3">
+        <h5 class="mb-0 text-center"><strong>Resumen de {{month|date:" F Y "}} </strong></h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover text-nowrap">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th class="text-center" scope="col">Cliente</th>
+                    <th class="text-center" scope="col">Servicios</th>
+                    <th class="text-center" scope="col">Extra (CUP)</th>
+                    <th class="text-center" scope="col">Duración (Días)</th>
+                    <th class="text-center" scope="col">Entregado</th>
+                    
+                    <th class="text-center" scope="col">Ganancia (CUP) </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for order_item in object_list %}
+                {% if order_item.paid %}
+                <tr>
+                    <th scope="row">{{ order_item.id }}</th>
+                    <td class="text-center">{{ order_item.client }}</td>
+                    <td class="text-center" >
+                        
+                        {% for d in order_item.service.all %}
+                        {% if forloop.last %}
+                        {{d}}.
+                        {% elif forloop.counter == 4 or forloop.counter == 7 %} <br> 
+                        {{d}},
+                        {% else %}
+                        {{d}}, 
+                        {% endif %}
+                        {% endfor %}
+                        
+                    </td>
+                    <td class="text-center">{% if order_item.extra_price %}{{ order_item.extra_price|intword }} {% else %} -- {% endif %}</td>
+                    <td class="text-center">{{order_item.get_delivery_time|naturaltime}}</td>
+                    <td class="text-center">{{order_item.order_date|date:" d/n/y "}}</td>
+                    <td class="text-center">{{ order_item.get_final_price|intword }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                {% if not money_m %}  <tr>
+                    <th class="text-center" scope="col">Este mes todavia no has ganado dinerito <i class="fas fa-grin-beam-sweat  "></i> Que pasa?</th>
+                </tr> {% endif %}
+               
+                
+                
+               
+            
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+  {% endblock %}

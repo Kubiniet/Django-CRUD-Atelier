@@ -1,81 +1,79 @@
 {% extends "./base.html" %} {% load crispy_forms_tags %}
 
-{% block title %} Gestión de Clientes {% endblock %}
+
+
+{% block title %} Gestión de Servicios {% endblock title %}
 
 {% block body %}
-<div class="container">
-    <div class="col-lg-4 col-xl-4 offset-lg-4 col-md-6 offset-md-3 col-sm-12 pb-10">
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-dismissible alert-success">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong class="text-dark">{{ message }}</strong>
-        </div>
-        {% endfor %}
-        {% endif %}
-        
-        <div class="accordion mb-4 " id="accordionExample">
-            <div class="accordion-item">
-              <h2 class="accordion-header text-center" id="headingOne">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                  <h2 >Nuevo Servicio  </h2>
-                </button>
-              </h2>
-              <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample" >
-                <div class="accordion-body">
-                    <h2></h2>
-                    <div class="card">
-                        <div class="card-body">
-                            <form action="{% url 'core:services' %}" method="POST">{% csrf_token %}
-                                {{ form|crispy }}
-                                <div class="form-group p-4">
-                                    <button type="submit" class="btn btn-success btn-block text-white f-right">Guardar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+<section class="mb-4 ">
+<div class="col-lg-4 col-xl-4 offset-lg-4 col-md-6 offset-md-3 col-sm-12 pb-10">
+
+    <div class="card">
+        <div class='card-header text-center'><h2>Servicios</h2></div>
+        <div class="card-body">
+            <form action="{% url 'core:services' %}" method="POST">{% csrf_token %}
+                        {{ form|crispy }}
+                <div class="form-group pt-2">
+                <button type="submit" class="btn btn-success btn-block text-white " >Crear</button>
                 </div>
-              </div>
-            </div>
-            
-        </div>
-        <h1>Tabla de Servicios</h1>
-    </div>
-    <div class="row pt-5">
-        
-        {% regroup object_list by get_section_display as country_list %}
-
-
-    {% for country in country_list %}
-    <div class='col-xl-4 col-lg-4 col-md-6 col-sm-12'>
-        <h2 class='text-center'>{{ country.grouper }}</h1> 
-        <div class="table-responsive py-2">
-            <table class="table "">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Nombre</th>
-                        <th>Price</th>
-                        
-                        <th class='f-right'colspan="2">Opciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-            {% for c in country.list %}
-            <tr>
-                <td>{{forloop.counter}}</td>
-                <td><a href="{% url 'core:detail_service' c.id %}" class="btn btn-info">{{c.name}}</a></td>
-                <td>{{c.price}}</td>
-            
-                <td class='f-right'><a href="{% url 'core:del_serv' c.id %}" class="btn btn-danger btnEliminacion">X</a></td>
-                
-            </tr>
-            {% endfor %}
-                </tbody>
-            </table>
+            </form>
         </div>
     </div>
-    {% endfor %}
-    </div>      
+       
 </div>
-{% endblock %}
+</section>
+<section class="mb-4 ">
+    <div class="row">
+{% regroup object_list by get_section_display as country_list %}
+{% for country in country_list %}
+
+    <div class="col-xl-6">
+    <div class="card ">
+      <div class="card-header text-center py-3">
+        <h5 class="mb-0 text-center">
+          <strong>{{ country.grouper }}</strong>
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover text-nowrap">
+            <thead>
+              <tr>
+                
+                <th scope="row">Servicio</th>
+                <th scope="row">Precio</th>
+                <th scope="row" class='f-right'colspan="2">Opciones</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for c in country.list %}
+                <tr> 
+                    
+                    <td><a href="{{ c.get_absolute_url }}" class="btn btn-info">{{c.name}}</a></td>
+                    <td>{{c.price}}</td>
+                    
+                    <td><a href="{{c.get_add_to_cart_url}}" class="btn btn-success btnEliminacion">+</a>
+                            <a href="{% url 'core:del-serv' c.pk %}" class="btn btn-danger btnEliminacion">X</a></td>
+                   
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+</div> 
+{% endfor %}
+</div>
+</section>
+
+
+
+
+
+
+
+
+{% endblock body %}
+
+
