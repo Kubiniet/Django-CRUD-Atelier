@@ -1,6 +1,6 @@
 # Django-CRUD-Atelier
 
-_Little orders management web app with django and bootstrap4 for an Atelier _
+_Little orders management web app with django and bootstrap4 for an Atelier_
 
 
 
@@ -19,7 +19,7 @@ django-debug-toolbar
 
 _What you need to run to get a development environment running_
 
-_step-by-step _
+_step-by-step_
 
 ```
 pip install virtualenv
