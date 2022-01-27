@@ -1,20 +1,21 @@
 
-from dataclasses import fields
-from django.http.response import HttpResponse, JsonResponse
+from re import template
+from django.forms import models
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
-from django.contrib.auth.views import LoginView, LogoutView
-from .models import (Client, Service, Order)
-from django.db.models import Sum, Avg, Max, Min, Count, F
-from django.views.generic import CreateView, ListView, DetailView, View
+from django.urls import reverse_lazy
+from .models import (Client, Service, OrderService, Order, Task)
+from django.views.generic import CreateView, ListView, DetailView, View,TemplateView,DeleteView,UpdateView
+from .forms import ClientForm, OrderForm,ServiceForm,UpdateOrderForm,TaskForm
+from django.utils import timezone
+from django.http.response import  JsonResponse
 from django.views.generic.dates import MonthArchiveView, timezone_today
-from .forms import ClientForm, OrderForm, NewOrderForm, ServiceForm
 from datetime import timedelta
+from django.db.models import Sum, Avg, Max, Min, Count, F
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
-
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
@@ -24,15 +25,14 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         return reverse_lazy('core:home')
 
-
-class ClientView(LoginRequiredMixin, ListView):
+class ClientView(LoginRequiredMixin,ListView):
     template_name = "clients.html"
     model = Client
 
     def get_context_data(self, **kwargs):
         context = super(ClientView, self).get_context_data(**kwargs)
         context['form'] = ClientForm
-        search_area = self.request.GET.get('search_area') or ''
+        search_area = self.request.GET.get('search-area') or ''
         if search_area:
             context['object_list'] = context['object_list'].filter(
                 name__icontains=search_area)
@@ -50,7 +50,6 @@ class ClientView(LoginRequiredMixin, ListView):
             messages.warning(self.request, "You do not have an active order")
             return redirect("core:clientes")
 
-
 def DetailClient(request, pk):
     client = get_object_or_404(Client, pk=pk)
     form = ClientForm(request.POST or None, instance=client)
@@ -59,14 +58,12 @@ def DetailClient(request, pk):
         return redirect('core:clientes')
     return render(request, 'detail_client.html', {"client": client, 'form': form})
 
-
 def DelClient(request, pk):
     client = Client.objects.get(pk=pk)
     client.delete()
     return redirect('core:clientes')
 
-
-class ServiceView(LoginRequiredMixin, ListView):
+class ServiceView(LoginRequiredMixin,ListView):
     template_name = "services.html"
     model = Service
     ordering = ['section']
@@ -89,7 +86,6 @@ class ServiceView(LoginRequiredMixin, ListView):
             messages.warning(self.request, "You do not have an active order")
             return redirect("core:services")
 
-
 def UpdateService(request, pk):
     serv = get_object_or_404(Service, pk=pk)
     form = ServiceForm(request.POST or None, instance=serv)
@@ -98,146 +94,129 @@ def UpdateService(request, pk):
         return redirect('core:services')
     return render(request, 'detail_service.html', {"serv": serv, 'form': form})
 
+class DelService(LoginRequiredMixin,DeleteView):
+    model = Service
+    success_url =reverse_lazy('core:services')
+    template_name='serv_check_del.html'
 
-def DelService(request, pk):
-    serv = Service.objects.get(pk=pk)
-    serv.delete()
-    return redirect('core:services')
-
-
-class OrderView(LoginRequiredMixin, ListView):
-    template_name = "new_order_form.html"
+class OrderView(LoginRequiredMixin,ListView):
+    template_name = "order.html"
     model = Order
+    orders=OrderService.objects.filter(ordered=False)
     ordering = ['paid', "-start_date"]
 
     def get_context_data(self, **kwargs):
         context = super(OrderView, self).get_context_data(**kwargs)
-        context['form'] = NewOrderForm()
-        search_area = self.request.GET.get('search_area') or ''
+        context['form'] = OrderForm(self.request.POST or None)
+        search_area = self.request.GET.get('search-area') or ''
         if search_area:
             context['object_list'] = context['object_list'].filter(
                 client__name__icontains=search_area)
         return context
 
     def post(self, request, *args, **kwargs):
-        form = NewOrderForm()
+        form = OrderForm()
         try:
-            print('intentando')
             if request.method == "POST":
-                form = NewOrderForm(request.POST)
+                form = OrderForm(request.POST)
                 if form.is_valid():
-                    print('es valido')
                     form.save()
+                   
+                    self.orders.update(ordered=True)
                     return redirect('core:orders')
                 else:
-                    return HttpResponse("no es valido")
+                    messages.warning(self.request, "You do not have an active order")
+                    return redirect("core:orders")
         except ObjectDoesNotExist:
-            print('no es valido')
+            messages.warning(self.request, "You do not have an active order")
+            return redirect("core:orders")
+        except ValueError:
             messages.warning(self.request, "You do not have an active order")
             return redirect("core:orders")
 
-
 def DetailOrder(request, pk):
     order = get_object_or_404(Order, pk=pk)
-    form = OrderForm(request.POST or None, instance=order)
+    form = UpdateOrderForm(request.POST or None, instance=order)
     if form.is_valid():
         form.save()
         return redirect('core:orders')
     return render(request, 'detail_order.html', {"order": order, 'form': form})
 
+class DelOrder(LoginRequiredMixin,DeleteView):
+    model = Order
+    success_url =reverse_lazy('core:orders')
+    template_name='order_check.html'
 
-class MonthOrderView(LoginRequiredMixin, MonthArchiveView):
-    template_name = 'panel.html'
-    queryset = Order.objects.all()
-    date_field = 'order_date'
-    allow_future = True
-    ordering = ['paid', "-start_date"]
+class OrderSummary(LoginRequiredMixin,ListView):
+    model=OrderService
+    template_name="summary.html"
+    queryset=OrderService.objects.all().filter(ordered=False)   
+    orders=OrderService.objects.filter(ordered=False)
 
     def get_context_data(self, **kwargs):
-        context = super(MonthOrderView, self).get_context_data(**kwargs)
-        m = self.get_month()
-        y = self.get_year()
-        profit = Order.objects.filter(paid=True, order_date__month=m)
-        profit_y = Order.objects.filter(paid=True, order_date__year=y)
-        money = 0
-        money_y = 0
-        orders_months = self.object_list.count()
-        for order in profit:
-            money += order.quantity * order.service.price + order.extra_price
-        for order in profit_y:
-            money_y += order.quantity * order.service.price + order.extra_price
-        context['feo'] = money
-        context['money_y'] = money_y
-        context['count'] = str(orders_months)
-        context['count_m'] = str(profit.count())
-        context['count_y'] = self.queryset.filter(
-            order_date__year=y).count()
+        context = super(OrderSummary, self).get_context_data(**kwargs)
+        context['form'] = OrderForm(self.request.POST or None)
         return context
 
+    def post(self, request, *args, **kwargs):
+        form = OrderForm()
+        try:
+            if request.method == "POST":
+                form = OrderForm(request.POST)
+                if form.is_valid():
+                    form.save()
+                   
+                    self.orders.update(ordered=True)
+                    return redirect('core:orders')
+                else:
+                    messages.warning(self.request, "You do not have an active order")
+                    return redirect("core:summary")
+        except ObjectDoesNotExist:
+            messages.warning(self.request, "You do not have an active order")
+            return redirect("core:summary")
+        except ValueError:
+            messages.warning(self.request, "You do not have an active order")
+            return redirect("core:summary")
 
-def get_profit_month(self):
-    profit = self.objects.filter(paid=True)
-    money = 0
-    for order in profit:
-        money += order.quantity * order.service.price
-    return money
+def add_to_cart(request, pk):
+    serv = get_object_or_404(Service, id=pk)
+    order_item, created = OrderService.objects.get_or_create(
+        service=serv,
+        ordered=False
+    )
+    # check if the order item is in the order
+    if OrderService.objects.filter(service__id=serv.id).exists():
+        order_item.quantity += 1
+        order_item.save()
+        messages.info(request, "This item quantity was updated.")
+        return redirect("core:summary")
+    else:
+        order_item.save()
+        messages.info(request, "This item was added to your cart.")
+        return redirect("core:summary")
 
+def remove_from_cart(request, pk):
+    serv = get_object_or_404(Service, id=pk)
+   
+    if OrderService.objects.filter(service__id=serv.id).exists():
+        order_item= OrderService.objects.filter(ordered=False,service=serv)[0]    
+        if order_item.quantity > 1:
+            order_item.quantity -= 1
+            order_item.save()
+            return redirect("core:summary")
+        else:
+            order_item.delete()
+            return redirect("core:summary")
+    else:
+        messages.info(request, "You do not have an active order")
+        return redirect("core:summary")
 
 def SetPaid(request, pk):
     order = get_object_or_404(Order, pk=pk)
     order.paid = True
+    order.order_date = timezone_today()
     order.save()
-    # if
     return redirect("core:orders")
-
-
-def SetPaidByDate(request, pk, year, month):
-    order = get_object_or_404(Order, pk=pk)
-    order.paid = True
-    print(year)
-    order.save()
-
-    return redirect("core:archive_month_numeric", year, month)
-
-
-class HomeView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        profit = Order.objects.filter(paid=True)
-        id = profit.values('client').annotate(
-            Count('id')).order_by('-id__count').first()['client']
-
-        best_client_orders = profit.filter(client_id=id)
-        count_order_best_client = best_client_orders.count()
-        cliente = best_client_orders[0].client.name
-        count_client = Client.objects.count()
-        service_id = profit.values('service').annotate(
-            Count('id')).order_by('-id__count').first()['service']
-        service_count = profit.filter(service_id=service_id).count()
-
-        service = Service.objects.get(id=service_id).name
-
-        money_client = best_client_orders.annotate(
-            total=F("quantity") * F('service__price') + F('extra_price')).aggregate(Sum('total'))['total__sum']
-        most_expensive_order = profit.annotate(
-            total=F("quantity") * F('service__price') + F('extra_price')).aggregate(Max('total'))
-        avg = profit.annotate(
-            total=F("quantity") * F('service__price') + F('extra_price')).aggregate(Avg('total'))['total__avg']
-        total = profit.annotate(
-            total=F("quantity") * F('service__price') + F('extra_price')).aggregate(Sum('total'))['total__sum']
-        context = {
-            'total': total,
-            'count': profit.count(),
-            'client': cliente,
-            'money_client': money_client,
-            'count_orders_best_client': count_order_best_client,
-            'count_client': count_client,
-            'avg': avg,
-            'most_expensive_order': most_expensive_order,
-            'service': service,
-            "count_service": service_count
-        }
-        return render(request, 'home.html', context)
-
 
 def get_data(request, *args, **kwargs):
 
@@ -252,10 +231,10 @@ def get_data(request, *args, **kwargs):
         amount = 0
 
         items = Order.objects.filter(
-            paid=True, order_date__month=i).filter(order_date__lt=X + timedelta(days=31))
+            paid=True, order_date__month=i).filter(order_date__lt=X + timedelta(days=93))
 
         for item in items:
-            amount += (item.get_total_price())
+            amount += (item.get_final_price())
         if items.exists():
             orders.append(amount)
             months.append(i)
@@ -267,3 +246,98 @@ def get_data(request, *args, **kwargs):
 
     }
     return JsonResponse(data)
+
+class HomeView(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        profit = Order.objects.filter(paid=True)
+        pending = Order.objects.filter(paid=False)
+        count_client = Client.objects.count()
+        count_service = Service.objects.count()
+        total = profit.annotate(
+            total=F("service__quantity") * F('service__service__price') + F('extra_price')).aggregate(Sum('total'))['total__sum']
+        if not total:
+            total=0
+        context = {
+            'total': total,
+            'count': profit.count(),
+            'count_client': count_client,
+            'pending': pending.count(),
+            "count_service": count_service
+        }
+        return render(request, 'admin.html', context)
+
+class MonthOrderView(LoginRequiredMixin,MonthArchiveView):
+    template_name = 'months.html'
+    queryset = Order.objects.all()
+    date_field = 'order_date'
+    allow_future = True
+    ordering = ['paid', "-start_date"]
+
+    def get_context_data(self, **kwargs):
+        context = super(MonthOrderView, self).get_context_data(**kwargs)
+        m = self.get_month()
+        y = self.get_year()
+        profit = Order.objects.filter(paid=True, order_date__month=m)
+        profit_y = Order.objects.filter(paid=True, order_date__year=y)
+
+        money_m = profit.annotate(
+            total=F("service__quantity") * F('service__service__price') + F('extra_price')).aggregate(Sum('total'))['total__sum']
+        money_y = profit_y.annotate(
+            total=F("service__quantity") * F('service__service__price') + F('extra_price')).aggregate(Sum('total'))['total__sum']
+        orders_months = self.object_list.count()
+        
+        
+        context['money_m'] = money_m
+        context['money_y'] = money_y
+        context['count'] = str(orders_months)
+        context['count_m'] = str(profit.count())
+        context['count_p'] = str(orders_months - profit.count())
+        return context
+
+def SetPaidByDate(request, pk, year, month):
+    order = get_object_or_404(Order, pk=pk)
+    order.paid = True
+    order.order_date = timezone_today()
+    order.save()
+
+    return redirect("core:orders-month", year, month)
+
+class TodoListView(ListView):
+    model = Task
+    template_name='task.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TodoListView, self).get_context_data(**kwargs)
+        context['form'] = TaskForm
+
+        return context
+
+    def post(self,request,*args,**kwargs):
+        form=TaskForm
+        try:
+            if request.method == "POST":
+                form = TaskForm(request.POST)
+                if form.is_valid():
+                    form.save()
+                    return redirect('core:task')
+        except ObjectDoesNotExist:
+            
+            return redirect("core:task")
+
+class TaskUpdateView(UpdateView):
+    model = Task    
+    template_name='detail_task.html'
+    success_url='core:task'
+    form_class =TaskForm
+
+def SetTaskDone(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    task.done = True
+    task.save()
+    return redirect("core:task")
+
+class DelTask(LoginRequiredMixin,DeleteView):
+    model = Task
+    success_url =reverse_lazy('core:task')
+    template_name='task_check_delete.html'
+    
