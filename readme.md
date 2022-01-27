@@ -35,7 +35,7 @@ C:\> env\Scripts\activate.bat
 PowerShell
 PS C:\> <env\Scripts\Activate.ps1
 
-pip install -r requirments.txt
+pip install -r requirements.txt
 
 ```
 
@@ -54,18 +54,8 @@ pip install -r requirments.txt
 
 
 
-## Licencia 📄
-
-Este proyecto está bajo la Licencia (Tu Licencia) - mira el archivo [LICENSE.md](LICENSE.md) para detalles
-
-## Expresiones de Gratitud 🎁
-
-* Comenta a otros sobre este proyecto 📢
-* Invita una cerveza 🍺 o un café ☕ a alguien del equipo. 
-* Da las gracias públicamente 🤓.
-* etc.
 
 
 
 ---
-⌨️ con ❤️ por [Villanuevand](https://github.com/Villanuevand) 😊
+⌨️ con ❤️ por [Kubiniet](https://github.com/Kubiniet) 😊
