@@ -4,11 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 import datetime
 
-
-
-
 BIRTH_YEAR_CHOICES = ['2022', '2023', '2024']
-
 
 class ClientForm(forms.ModelForm):
 
@@ -82,7 +78,6 @@ class ServiceForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[str(field)].label = ''
-
         self.fields['name'].widget.attrs.update(
             {"placeholder": 'Nombre de servicio'})
         self.fields['price'].widget.attrs.update(
@@ -92,14 +87,12 @@ class TaskForm(forms.ModelForm):
 
     class Meta:
         model = Task
-        exclude = ('done',)
-        
+        exclude = ('done',)     
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
-            self.fields[str(field)].label = ''
-           
+            self.fields[str(field)].label = ''        
         self.fields['title'].widget.attrs.update(
             {"placeholder": 'Título'})
         self.fields['task'].widget.attrs.update(
