@@ -12,7 +12,7 @@ _Do you need to install this_
 ```
 django-allauth
 django-crispy-forms
-django-debug-toolbar
+
 ```
 
 ### Instalation 🔧
